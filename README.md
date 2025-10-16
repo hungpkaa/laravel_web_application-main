@@ -17,9 +17,11 @@ React 18
 Inertia.js
 Tailwind CSS
 Vite
-Axios 3. 📈 Phương pháp phát triển
-Mô hình Agile/Scrum, chia thành 9 Sprint
-Mỗi Sprint gồm: Lập kế hoạch, thực hiện, review và retrospective
+Axios
+
+3. 📈 Phương pháp phát triển
+   Mô hình Agile/Scrum, chia thành 9 Sprint
+   Mỗi Sprint gồm: Lập kế hoạch, thực hiện, review và retrospective
 
 4. ⚡ Chức năng hệ thống
    Đăng ký, đăng nhập, phân quyền người dùng
