@@ -1,6 +1,9 @@
+<<<<<<< HEAD
+
 # Project management
 
 ## 🌍 Overview
+
 A simple project management application using Laravel 11 and React.
 
 ---
@@ -15,16 +18,19 @@ A simple project management application using Laravel 11 and React.
 6. Assign users to tasks
 7. View Tasks assigned to me
 8. Show dashboard with overview information
+
 ---
 
 ## 🔧 Technologies Used
 
 ### Frontend:
-- HTML, CSS, JavaScript, Bootstrap, React
+
+-   HTML, CSS, JavaScript, Bootstrap, React
 
 ### Backend:
-- PHP with Laravel Framework
-- sqlite for database management
+
+-   PHP with Laravel Framework
+-   sqlite for database management
 
 ---
 
@@ -58,20 +64,13 @@ LARAVEL_WEB_APPLICATION/
 ## 📊 Database Tables
 
 ### Key Tables:
+
 1. **Projects**: Stores projects details
 2. **Tasks**: Stores tasks information
-3. **Users**: Manages user 
-
-
----
-
-## 📃 License
-This project is licensed under the MIT License. See the LICENSE file for details.
+3. **Users**: Manages user
 
 ---
 
-## 📞 Contact
-If you have any questions or want to contribute, feel free to reach out:
+=======
 
-- **Email**: ducphong05092004@gmail.com
-- **GitHub**: https://github.com/dcgnohp
+# laravel_web_application-main
