@@ -13,6 +13,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
 {
@@ -34,13 +36,13 @@ class TaskController extends Controller
         }
 
         $tasks = $query->orderBy($sortField, $sortDirection)
-            ->paginate(10)
-            ->onEachSide(1);
+            ->paginate(10);
 
         return inertia("Task/Index", [
             "tasks" => TaskResource::collection($tasks),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
+            'baseRoute' => 'task.myTasks',
         ]);
     }
 
@@ -64,13 +66,10 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request)
     {
         $data = $request->validated();
-        /** @var $image \Illuminate\Http\UploadedFile */
-        $image = $data['image'] ?? null;
+        unset($data['image']);
+        unset($data['due_date']);
         $data['created_by'] = Auth::id();
         $data['updated_by'] = Auth::id();
-        if ($image) {
-            $data['image_path'] = $image->store('task/' . Str::random(), 'public');
-        }
         Task::create($data);
 
         return to_route('task.index')
@@ -108,14 +107,9 @@ class TaskController extends Controller
     public function update(UpdateTaskRequest $request, Task $task)
     {
         $data = $request->validated();
-        $image = $data['image'] ?? null;
+        unset($data['image']);
+        unset($data['due_date']);
         $data['updated_by'] = Auth::id();
-        if ($image) {
-            if ($task->image_path) {
-                Storage::disk('public')->deleteDirectory(dirname($task->image_path));
-            }
-            $data['image_path'] = $image->store('task/' . Str::random(), 'public');
-        }
         $task->update($data);
 
         return to_route('task.index')
@@ -129,9 +123,6 @@ class TaskController extends Controller
     {
         $name = $task->name;
         $task->delete();
-        if ($task->image_path) {
-            Storage::disk('public')->deleteDirectory(dirname($task->image_path));
-        }
         return to_route('task.index')
             ->with('success', "Task \"$name\" was deleted");
     }
@@ -152,13 +143,39 @@ class TaskController extends Controller
         }
 
         $tasks = $query->orderBy($sortField, $sortDirection)
-            ->paginate(10)
-            ->onEachSide(1);
+            ->paginate(10);
 
         return inertia("Task/Index", [
             "tasks" => TaskResource::collection($tasks),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
+            'baseRoute' => 'task.myTasks',
         ]);
+    }
+
+    /**
+     * Allow assigned user to update task status only.
+     */
+    public function updateStatus(Request $request, Task $task)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            abort(401);
+        }
+
+        // Only assigned user can update their task status
+        if ($task->assigned_user_id !== $user->id) {
+            abort(403, 'You can only update status of your assigned tasks');
+        }
+
+        $data = $request->validate([
+            'status' => ['required', Rule::in(['in_progress', 'completed'])],
+        ]);
+
+        $task->status = $data['status'];
+        $task->updated_by = $user->id;
+        $task->save();
+
+        return back()->with('success', 'Task status updated successfully');
     }
 }

@@ -27,8 +27,7 @@ class UserController extends Controller
         }
 
         $users = $query->orderBy($sortField, $sortDirection)
-            ->paginate(10)
-            ->onEachSide(1);
+            ->paginate(10);
 
         return inertia("User/Index", [
             "users" => UserCrudResource::collection($users),
@@ -55,7 +54,7 @@ class UserController extends Controller
         $data['password'] = bcrypt($data['password']);
         User::create($data);
 
-        return to_route('user.index')
+        return to_route('admin.user.index')
             ->with('success', 'User was created');
     }
 
@@ -91,7 +90,7 @@ class UserController extends Controller
         }
         $user->update($data);
 
-        return to_route('user.index')
+        return to_route('admin.user.index')
             ->with('success', "User \"$user->name\" was updated");
     }
 
@@ -102,7 +101,7 @@ class UserController extends Controller
     {
         $name = $user->name;
         $user->delete();
-        return to_route('user.index')
+        return to_route('admin.user.index')
             ->with('success', "User \"$name\" was deleted");
     }
 }

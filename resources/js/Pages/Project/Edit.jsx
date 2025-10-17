@@ -19,7 +19,7 @@ export default function Create({ auth, project }) {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    post(route("project.update", project.id));
+  post(route("admin.project.update", project.id));
   };
 
   return (
@@ -119,16 +119,15 @@ export default function Create({ auth, project }) {
                   onChange={(e) => setData("status", e.target.value)}
                 >
                   <option value="">Select Status</option>
-                  <option value="pending">Pending</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="completed">Completed</option>
+                  <option value="in_progress">Đang tiến hành</option>
+                  <option value="completed">Hoàn thành</option>
                 </SelectInput>
 
                 <InputError message={errors.project_status} className="mt-2" />
               </div>
               <div className="mt-4 text-right">
                 <Link
-                  href={route("project.index")}
+                  href={route("admin.project.index")}
                   className="bg-gray-100 py-1 px-3 text-gray-800 rounded shadow transition-all hover:bg-gray-200 mr-2"
                 >
                   Cancel

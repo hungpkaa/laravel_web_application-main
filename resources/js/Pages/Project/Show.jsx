@@ -1,11 +1,13 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
+import { useAuth } from "@/Components/AuthCheck";
 import {
   PROJECT_STATUS_CLASS_MAP,
   PROJECT_STATUS_TEXT_MAP,
 } from "@/constants.jsx";
 import TasksTable from "../Task/TasksTable";
 export default function Show({ auth, success, project, tasks, queryParams }) {
+  const { isAdmin } = useAuth();
   return (
     <AuthenticatedLayout
       user={auth.user}
@@ -14,12 +16,14 @@ export default function Show({ auth, success, project, tasks, queryParams }) {
           <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {`Project "${project.name}"`}
           </h2>
-          <Link
-            href={route("project.edit", project.id)}
-            className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600"
-          >
-            Edit
-          </Link>
+          {isAdmin && (
+            <Link
+              href={route("admin.project.edit", project.id)}
+              className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600"
+            >
+              Edit
+            </Link>
+          )}
         </div>
       }
     >

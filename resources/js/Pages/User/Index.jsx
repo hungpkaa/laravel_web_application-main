@@ -3,8 +3,10 @@ import TextInput from "@/Components/TextInput";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, router } from "@inertiajs/react";
 import TableHeading from "@/Components/TableHeading";
+import { useAuth } from "@/Components/AuthCheck";
 
 export default function Index({ auth, users, queryParams = null, success }) {
+  const { isAdmin } = useAuth();
   queryParams = queryParams || {};
   const searchFieldChanged = (name, value) => {
     if (value) {
@@ -13,7 +15,7 @@ export default function Index({ auth, users, queryParams = null, success }) {
       delete queryParams[name];
     }
 
-    router.get(route("user.index"), queryParams);
+  router.get(route("admin.user.index"), queryParams);
   };
 
   const onKeyPress = (name, e) => {
@@ -33,14 +35,14 @@ export default function Index({ auth, users, queryParams = null, success }) {
       queryParams.sort_field = name;
       queryParams.sort_direction = "asc";
     }
-    router.get(route("user.index"), queryParams);
+  router.get(route("admin.user.index"), queryParams);
   };
 
   const deleteUser = (user) => {
     if (!window.confirm("Are you sure you want to delete the user?")) {
       return;
     }
-    router.delete(route("user.destroy", user.id));
+  router.delete(route("admin.user.destroy", user.id));
   };
 
   return (
@@ -51,12 +53,14 @@ export default function Index({ auth, users, queryParams = null, success }) {
           <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             Users
           </h2>
-          <Link
-            href={route("user.create")}
-            className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600"
-          >
-            Add new
-          </Link>
+          {isAdmin && (
+            <Link
+              href={route("admin.user.create")}
+              className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600"
+            >
+              Add new
+            </Link>
+          )}
         </div>
       }
     >
@@ -157,18 +161,30 @@ export default function Index({ auth, users, queryParams = null, success }) {
                           {user.created_at}
                         </td>
                         <td className="px-3 py-2 text-nowrap">
-                          <Link
-                            href={route("user.edit", user.id)}
-                            className="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1"
-                          >
-                            Edit
-                          </Link>
-                          <button
-                            onClick={(e) => deleteUser(user)}
-                            className="font-medium text-red-600 dark:text-red-500 hover:underline mx-1"
-                          >
-                            Delete
-                          </button>
+                          {isAdmin && (
+                            <>
+                              <Link
+                                href={route("admin.user.edit", user.id)}
+                                className="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1"
+                              >
+                                Edit
+                              </Link>
+                              <button
+                                onClick={(e) => deleteUser(user)}
+                                className="font-medium text-red-600 dark:text-red-500 hover:underline mx-1"
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                          {!isAdmin && (
+                            <Link
+                              href={route("admin.user.show", user.id)}
+                              className="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1"
+                            >
+                              View
+                            </Link>
+                          )}
                         </td>
                       </tr>
                     ))}

@@ -20,6 +20,14 @@ class ProjectController extends Controller
     {
         $query = Project::query();
 
+        // Nếu không phải admin, chỉ hiển thị các dự án mà người dùng được phân công (qua task)
+        $user = auth()->user();
+        if ($user && $user->role !== 'admin') {
+            $query->whereHas('tasks', function ($q) use ($user) {
+                $q->where('assigned_user_id', $user->id);
+            });
+        }
+
         $sortField = request("sort_field", 'created_at');
         $sortDirection = request("sort_direction", "desc");
 
@@ -31,8 +39,7 @@ class ProjectController extends Controller
         }
 
         $projects = $query->orderBy($sortField, $sortDirection)
-            ->paginate(10)
-            ->onEachSide(1);
+            ->paginate(10);
 
         return inertia("Project/Index", [
             "projects" => ProjectResource::collection($projects),
@@ -55,16 +62,13 @@ class ProjectController extends Controller
     public function store(StoreProjectRequest $request)
     {
         $data = $request->validated();
-        /** @var $image \Illuminate\Http\UploadedFile */
-        $image = $data['image'] ?? null;
+        unset($data['image']);
+        unset($data['due_date']);
         $data['created_by'] = Auth::id();
         $data['updated_by'] = Auth::id();
-        if ($image) {
-            $data['image_path'] = $image->store('project/' . Str::random(), 'public');
-        }
         Project::create($data);
 
-        return to_route('project.index')
+        return to_route('admin.project.index')
             ->with('success', 'Project was created');
     }
 
@@ -86,8 +90,7 @@ class ProjectController extends Controller
         }
 
         $tasks = $query->orderBy($sortField, $sortDirection)
-            ->paginate(10)
-            ->onEachSide(1);
+            ->paginate(10);
         return inertia('Project/Show', [
             'project' => new ProjectResource($project),
             "tasks" => TaskResource::collection($tasks),
@@ -132,6 +135,8 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         $name = $project->name;
+        // Xóa tất cả các task liên quan trước
+        $project->tasks()->delete();
         $project->delete();
         if ($project->image_path) {
             Storage::disk('public')->deleteDirectory(dirname($project->image_path));

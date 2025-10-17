@@ -14,9 +14,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Ensure there is at least one user with id=1 so factories that
-        // reference users by id won't violate foreign key constraints.
-        User::factory()->create([
+        // Tạo tài khoản Admin
+        User::factory()->admin()->create([
             'id' => 1,
             'name' => 'Admin',
             'email' => 'admin@example.com',
@@ -24,6 +23,7 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
+        // Tạo tài khoản User thường
         User::factory()->create([
             'id' => 2,
             'name' => 'User Two',

@@ -4,10 +4,12 @@ import Dropdown from "@/Components/Dropdown";
 import NavLink from "@/Components/NavLink";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link } from "@inertiajs/react";
+import { useAuth } from "@/Components/AuthCheck";
 
 export default function AuthenticatedLayout({ user, header, children }) {
   const [showingNavigationDropdown, setShowingNavigationDropdown] =
     useState(false);
+  const { isAdmin } = useAuth();
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -22,36 +24,56 @@ export default function AuthenticatedLayout({ user, header, children }) {
               </div>
 
               <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                <NavLink
-                  href={route("dashboard")}
-                  active={route().current("dashboard")}
-                >
-                  Dashboard
-                </NavLink>
-                <NavLink
-                  href={route("project.index")}
-                  active={route().current("project.index")}
-                >
-                  Projects
-                </NavLink>
-                <NavLink
-                  href={route("task.index")}
-                  active={route().current("task.index")}
-                >
-                  All Tasks
-                </NavLink>
-                <NavLink
-                  href={route("user.index")}
-                  active={route().current("user.index")}
-                >
-                  Users
-                </NavLink>
-                <NavLink
-                  href={route("task.myTasks")}
-                  active={route().current("task.myTasks")}
-                >
-                  My Tasks
-                </NavLink>
+                {isAdmin && (
+                  <NavLink
+                    href={route("dashboard")}
+                    active={route().current("dashboard")}
+                  >
+                    Dashboard
+                  </NavLink>
+                )}
+                
+                {/* Menu cho Admin */}
+                {isAdmin && (
+                  <>
+                    <NavLink
+                      href={route("admin.project.index")}
+                      active={route().current("admin.project.*")}
+                    >
+                      Projects
+                    </NavLink>
+                    <NavLink
+                      href={route("admin.task.index")}
+                      active={route().current("admin.task.*")}
+                    >
+                      All Tasks
+                    </NavLink>
+                    <NavLink
+                      href={route("admin.user.index")}
+                      active={route().current("admin.user.*")}
+                    >
+                      Users
+                    </NavLink>
+                  </>
+                )}
+                
+                {/* Menu cho User thường */}
+                {!isAdmin && (
+                  <>
+                    <NavLink
+                      href={route("project.index")}
+                      active={route().current("project.*")}
+                    >
+                      Dự án
+                    </NavLink>
+                    <NavLink
+                      href={route("task.myTasks")}
+                      active={route().current("task.myTasks")}
+                    >
+                      Nhiệm vụ của tôi
+                    </NavLink>
+                  </>
+                )}
               </div>
             </div>
 
@@ -143,12 +165,50 @@ export default function AuthenticatedLayout({ user, header, children }) {
           }
         >
           <div className="pt-2 pb-3 space-y-1">
-            <ResponsiveNavLink
-              href={route("dashboard")}
-              active={route().current("dashboard")}
-            >
-              Dashboard
-            </ResponsiveNavLink>
+            {isAdmin && (
+              <>
+                <ResponsiveNavLink
+                  href={route("dashboard")}
+                  active={route().current("dashboard")}
+                >
+                  Dashboard
+                </ResponsiveNavLink>
+                <ResponsiveNavLink
+                  href={route("admin.project.index")}
+                  active={route().current("admin.project.*")}
+                >
+                  Projects
+                </ResponsiveNavLink>
+                <ResponsiveNavLink
+                  href={route("admin.task.index")}
+                  active={route().current("admin.task.*")}
+                >
+                  All Tasks
+                </ResponsiveNavLink>
+                <ResponsiveNavLink
+                  href={route("admin.user.index")}
+                  active={route().current("admin.user.*")}
+                >
+                  Users
+                </ResponsiveNavLink>
+              </>
+            )}
+            {!isAdmin && (
+              <>
+                <ResponsiveNavLink
+                  href={route("project.index")}
+                  active={route().current("project.*")}
+                >
+                  Dự án
+                </ResponsiveNavLink>
+                <ResponsiveNavLink
+                  href={route("task.myTasks")}
+                  active={route().current("task.myTasks")}
+                >
+                  Nhiệm vụ của tôi
+                </ResponsiveNavLink>
+              </>
+            )}
           </div>
 
           <div className="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">

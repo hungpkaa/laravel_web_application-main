@@ -8,9 +8,11 @@ import {
 } from "@/constants.jsx";
 import { Head, Link, router } from "@inertiajs/react";
 import TableHeading from "@/Components/TableHeading";
+import { useAuth } from "@/Components/AuthCheck";
 
 export default function Index({ auth, projects, queryParams = null, success }) {
   queryParams = queryParams || {};
+  const { isAdmin } = useAuth();
   const searchFieldChanged = (name, value) => {
     if (value) {
       queryParams[name] = value;
@@ -18,7 +20,7 @@ export default function Index({ auth, projects, queryParams = null, success }) {
       delete queryParams[name];
     }
 
-    router.get(route("project.index"), queryParams);
+  router.get(route(isAdmin ? "admin.project.index" : "project.index"), queryParams);
   };
 
   const onKeyPress = (name, e) => {
@@ -38,14 +40,14 @@ export default function Index({ auth, projects, queryParams = null, success }) {
       queryParams.sort_field = name;
       queryParams.sort_direction = "asc";
     }
-    router.get(route("project.index"), queryParams);
+  router.get(route(isAdmin ? "admin.project.index" : "project.index"), queryParams);
   };
 
   const deleteProject = (project) => {
     if (!window.confirm("Are you sure you want to delete the project?")) {
       return;
     }
-    router.delete(route("project.destroy", project.id));
+  router.delete(route(isAdmin ? "admin.project.destroy" : "project.destroy", project.id));
   };
 
   return (
@@ -56,12 +58,14 @@ export default function Index({ auth, projects, queryParams = null, success }) {
           <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             Projects
           </h2>
-          <Link
-            href={route("project.create")}
-            className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600"
-          >
-            Add new
-          </Link>
+          {isAdmin && (
+            <Link
+              href={route("admin.project.create")}
+              className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600"
+            >
+              Add new
+            </Link>
+          )}
         </div>
       }
     >
@@ -174,7 +178,7 @@ export default function Index({ auth, projects, queryParams = null, success }) {
                           <img src={project.image_path} style={{ width: 60 }} />
                         </td>
                         <th className="px-3 py-2 text-gray-100 text-nowrap hover:underline">
-                          <Link href={route("project.show", project.id)}>
+                          <Link href={route(isAdmin ? "admin.project.show" : "project.show", project.id)}>
                             {project.name}
                           </Link>
                         </th>
@@ -196,18 +200,30 @@ export default function Index({ auth, projects, queryParams = null, success }) {
                         </td>
                         <td className="px-3 py-2">{project.createdBy.name}</td>
                         <td className="px-3 py-2 text-nowrap">
-                          <Link
-                            href={route("project.edit", project.id)}
-                            className="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1"
-                          >
-                            Edit
-                          </Link>
-                          <button
-                            onClick={(e) => deleteProject(project)}
-                            className="font-medium text-red-600 dark:text-red-500 hover:underline mx-1"
-                          >
-                            Delete
-                          </button>
+                          {isAdmin && (
+                            <>
+                              <Link
+                                href={route("admin.project.edit", project.id)}
+                                className="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1"
+                              >
+                                Edit
+                              </Link>
+                              <button
+                                onClick={(e) => deleteProject(project)}
+                                className="font-medium text-red-600 dark:text-red-500 hover:underline mx-1"
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                          {!isAdmin && (
+                            <Link
+                              href={route(isAdmin ? "admin.project.show" : "project.show", project.id)}
+                              className="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1"
+                            >
+                              View
+                            </Link>
+                          )}
                         </td>
                       </tr>
                     ))}

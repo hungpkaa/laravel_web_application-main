@@ -22,7 +22,7 @@ export default function Create({ auth, task, projects, users }) {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    post(route("task.update", task.id));
+    post(route("admin.task.update", task.id));
   };
 
   return (
@@ -137,9 +137,8 @@ export default function Create({ auth, task, projects, users }) {
                   onChange={(e) => setData("status", e.target.value)}
                 >
                   <option value="">Select Status</option>
-                  <option value="pending">Pending</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="completed">Completed</option>
+                  <option value="in_progress">Đang tiến hành</option>
+                  <option value="completed">Hoàn thành</option>
                 </SelectInput>
 
                 <InputError message={errors.task_status} className="mt-2" />
@@ -193,7 +192,7 @@ export default function Create({ auth, task, projects, users }) {
 
               <div className="mt-4 text-right">
                 <Link
-                  href={route("task.index")}
+                  href={route("admin.task.index")}
                   className="bg-gray-100 py-1 px-3 text-gray-800 rounded shadow transition-all hover:bg-gray-200 mr-2"
                 >
                   Cancel

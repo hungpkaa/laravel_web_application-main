@@ -8,17 +8,14 @@ import { Head, Link, useForm } from "@inertiajs/react";
 
 export default function Create({ auth, projects, users }) {
   const { data, setData, post, errors, reset } = useForm({
-    image: "",
     name: "",
     status: "",
     description: "",
-    due_date: "",
   });
 
   const onSubmit = (e) => {
     e.preventDefault();
-
-    post(route("task.store"));
+    post(route("admin.task.store"));
   };
 
   return (
@@ -61,17 +58,6 @@ export default function Create({ auth, projects, users }) {
                 <InputError message={errors.project_id} className="mt-2" />
               </div>
               <div className="mt-4">
-                <InputLabel htmlFor="task_image_path" value="Task Image" />
-                <TextInput
-                  id="task_image_path"
-                  type="file"
-                  name="image"
-                  className="mt-1 block w-full"
-                  onChange={(e) => setData("image", e.target.files[0])}
-                />
-                <InputError message={errors.image} className="mt-2" />
-              </div>
-              <div className="mt-4">
                 <InputLabel htmlFor="task_name" value="Task Name" />
 
                 <TextInput
@@ -103,20 +89,6 @@ export default function Create({ auth, projects, users }) {
                 <InputError message={errors.description} className="mt-2" />
               </div>
               <div className="mt-4">
-                <InputLabel htmlFor="task_due_date" value="Task Deadline" />
-
-                <TextInput
-                  id="task_due_date"
-                  type="date"
-                  name="due_date"
-                  value={data.due_date}
-                  className="mt-1 block w-full"
-                  onChange={(e) => setData("due_date", e.target.value)}
-                />
-
-                <InputError message={errors.due_date} className="mt-2" />
-              </div>
-              <div className="mt-4">
                 <InputLabel htmlFor="task_status" value="Task Status" />
 
                 <SelectInput
@@ -126,9 +98,8 @@ export default function Create({ auth, projects, users }) {
                   onChange={(e) => setData("status", e.target.value)}
                 >
                   <option value="">Select Status</option>
-                  <option value="pending">Pending</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="completed">Completed</option>
+                  <option value="in_progress">Đang tiến hành</option>
+                  <option value="completed">Hoàn thành</option>
                 </SelectInput>
 
                 <InputError message={errors.task_status} className="mt-2" />
@@ -180,7 +151,7 @@ export default function Create({ auth, projects, users }) {
 
               <div className="mt-4 text-right">
                 <Link
-                  href={route("task.index")}
+                  href={route("admin.task.index")}
                   className="bg-gray-100 py-1 px-3 text-gray-800 rounded shadow transition-all hover:bg-gray-200 mr-2"
                 >
                   Cancel
